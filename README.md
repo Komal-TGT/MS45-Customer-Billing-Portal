@@ -1,40 +1,140 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# MS45 – Customer Billing & Usage Portal (Self-Service)
 
-## Getting Started
+A customer-facing portal that lets your users:
 
-First, run the development server:
+- View current usage and remaining balance
+- Download invoices
+- Top-up or upgrade plans
+- Regenerate API keys
+- Manage billing information & IP allowlist
 
-```bash
+This portal lives under your Admin Panel domain but is customer-facing.  
+Built with *Next.js* (frontend) + *Node.js API (BFF)* and integrates with:
+
+- *MS1* (Authentication via Azure AD B2C or magic link)
+- *MS32* (Usage data + key regeneration)
+- *MS10* (Invoices / Payments)
+- *MS9* (Emails for magic links / notifications)
+
+---
+
+## 🚀 Features
+
+| Page         | Description |
+|--------------|-------------|
+| *Dashboard* | Current month scans, remaining balance, spend at ₹5/scan, status (Active/Paused). |
+| *Usage* | Daily chart (30 days), top API endpoints, last 100 events (from MS32). |
+| *Billing* | Saved payment method, invoices list (from MS10), GST fields. |
+| *Plan* | Shows current plan, Top-up / Upgrade button (creates checkout via MS10). |
+| *Security* | Masked API key, regenerate key (calls MS32 + emails via MS9), IP allowlist. |
+ms45-portal/
+├─ pages/
+│ ├─ index.js # Dashboard page
+│ ├─ usage.js # Usage page (daily chart, top endpoints, last events)
+│ ├─ billing.js # Billing page (saved payment method, invoices)
+│ ├─ plan.js # Plan page (top-up / upgrade)
+│ ├─ security.js # Security page (API key, IP allowlist)
+│ └─ api/ # BFF endpoints: /me, /me/usage, /me/invoices, etc.
+├─ components/
+│ └─ Layout.js # Shared layout (header + nav)
+├─ styles/
+│ └─ globals.css # Tailwind CSS base styles
+├─ package.json
+└─ README.md
+
+
+---
+
+## 🛠 Installation
+
+1. *Clone this repository*  
+   ```bash
+   git clone <your-repo-url> ms45-portal
+   cd ms45-portal
+
+
+Install dependencies
+
+npm install
+
+
+This installs:
+
+Next.js
+
+React / React DOM
+
+SWR
+
+Axios
+
+Chart.js & React-ChartJS-2
+
+Tailwind CSS (already configured)
+
+Configure environment variables
+Create a .env.local file for your API URLs, keys, etc. Example:
+
+NEXT_PUBLIC_API_BASE=https://api.yourdomain.com
+
+
+Run development server
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+Open http://localhost:3000
+ in your browser.
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+Build for production
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+npm run build
+npm start
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+📡 API (BFF) Endpoints
+Endpoint	Method	Description
+/api/me	GET	Profile + subscription status
+/api/me/usage	GET	Aggregated usage (MS32)
+/api/me/invoices	GET	Invoices (MS10)
+/api/me/topup	POST	Creates payment intent (MS10)
+/api/me/regenerate-key	POST	Regenerates API key (MS32)
+/api/me/ip-allowlist	POST	Save IP allowlist to MS32/MS13
+🖥 Frontend Pages
 
-## Learn More
+pages/index.js – Dashboard
 
-To learn more about Next.js, take a look at the following resources:
+pages/usage.js – Usage chart, top endpoints, last 100 events
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+pages/billing.js – Billing & invoices
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+pages/plan.js – Current plan, top-up/upgrade
 
-## Deploy on Vercel
+pages/security.js – API key regeneration, IP allowlist
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Each page uses useSWR + axios to fetch from the above API endpoints.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+🎨 Styling
+
+Tailwind CSS for responsive design.
+
+Cards use bg-white rounded-2xl shadow p-6 for a clean look.
+
+Tables and charts styled consistently.
+
+Easy to replace with your brand colors in tailwind.config.js.
+
+✅ Acceptance Criteria
+
+Customer can see usage/invoices and pay without contacting support.
+
+Key regeneration works and is audited.
+
+Plan upgrades reflect immediately (MS10 + MS32).
+
+📜 License
+
+MIT or your chosen license.
+
+---
+
+## 📂 Folder Structure
